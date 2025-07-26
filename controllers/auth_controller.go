@@ -10,6 +10,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func GetAllUsers(c *fiber.Ctx) error {
+    var users []models.User
+    result := database.DB.Find(&users)
+    if result.Error != nil {
+        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+            "error": "Failed to retrieve users",
+        })
+    }
+
+    return c.JSON(users)
+}
 
 func Register(c *fiber.Ctx) error {
     

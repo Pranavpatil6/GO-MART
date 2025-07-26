@@ -9,18 +9,19 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Post("/register", controllers.Register)
     app.Post("/login", controllers.Login)
+	app.Get("/users",controllers.GetAllUsers)
 
     // Product
     app.Get("/products", controllers.GetAllProducts)
     app.Get("/products/:id", controllers.GetProduct)
-    app.Post("/products", middleware.JWTProtected(), controllers.CreateProduct)
-    app.Put("/products/:id", middleware.JWTProtected(), controllers.UpdateProduct)
-    app.Delete("/products/:id", middleware.JWTProtected(), controllers.DeleteProduct)
+    app.Post("/products", middleware.JWTProtected(),middleware.AdminOnly(), controllers.CreateProduct)
+    app.Put("/products/:id", middleware.JWTProtected(),middleware.AdminOnly(), controllers.UpdateProduct)
+    app.Delete("/products/:id", middleware.JWTProtected(),middleware.AdminOnly(), controllers.DeleteProduct)
 
     // Cart
-    cart := app.Group("/cart", middleware.JWTProtected())
+    cart := app.Group("/cart",middleware.JWTProtected())
     cart.Post("/add", controllers.AddToCart)
-    cart.Delete("/remove/:id", controllers.RemoveCartItem)
+    cart.Delete("	/remove/:id", controllers.RemoveCartItem)
     cart.Get("/", controllers.ViewCart)
     cart.Post("/apply-coupon", controllers.ApplyCoupon)
 
