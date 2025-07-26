@@ -10,34 +10,34 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Signup(c *fiber.Ctx) error {
-	type RegisterInput struct {
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
 
-	var input RegisterInput
-	if err := c.BodyParser(&input); err != nil {
-		return c.Status(422).JSON(err)
-	}
+func Register(c *fiber.Ctx) error {
+    
+	var input models.User
+    if err := c.BodyParser(&input); err != nil {
+        return c.Status(422).JSON(fiber.Map{"error": "Invalid JSON input"})
+    }
 
-	var user models.User
-	if err := database.DB.Where("email=?", input.Email).First(&user).Error; err == nil {
-		return c.Status(400).JSON(fiber.Map{"error": "Email already exists"})
-	}
+    if input.Name == "" || input.Email == "" || input.Password == "" {
+        return c.Status(422).JSON(fiber.Map{"error": "Missing required field"})
+    }
 
-	hash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
-	newUser := models.User{
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: string(hash),
-		Role:     "user",
-	}
-	database.DB.Create(&newUser)
-	
+    var exists models.User
+    if err := database.DB.Where("email = ?", input.Email).First(&exists).Error; err == nil {
+        return c.Status(400).JSON(fiber.Map{"error": "Email already registered"})
+    }
 
-	return c.Status(201).JSON(fiber.Map{"message": "Sign Up Successful"})
+    hash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
+    user := models.User{
+        Name:     input.Name,
+        Email:    input.Email,
+        Password: string(hash),
+        Role:     "user", // default role
+    }
+    if err := database.DB.Create(&user).Error; err != nil {
+        return c.Status(500).JSON(fiber.Map{"error": "Failed to create user"})
+    }
+    return c.Status(201).JSON(fiber.Map{"message": "User registered successfully"})
 }
 
 func Login(c *fiber.Ctx) error {

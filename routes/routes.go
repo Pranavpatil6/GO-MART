@@ -7,7 +7,7 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	app.Post("/register", controllers.Signup)
+	app.Post("/auth/register", controllers.Register)
     app.Post("/login", controllers.Login)
 
     // Product
@@ -33,10 +33,8 @@ func SetupRoutes(app *fiber.App) {
 
     //Orders
     orders := app.Group("/orders", middleware.JWTProtected())
-    orders.Post("/", controllers.CreateOrder)        // You may alias as POST /checkout as well
+    orders.Post("/", controllers.CreateOrder)        
     orders.Get("/", controllers.GetOrders)
     orders.Get("/:id", controllers.GetOrderById)
 
-    // ------ Optional Alias for Checkout ------
-    app.Post("/checkout", middleware.JWTProtected(), controllers.CreateOrder)
 }
