@@ -13,9 +13,9 @@ func SetupRoutes(app *fiber.App) {
     // Product
     app.Get("/products", controllers.GetAllProducts)
     app.Get("/products/:id", controllers.GetProduct)
-    app.Post("/products", middleware.JWTProtected(), middleware.AdminOnly(), controllers.CreateProduct)
-    app.Put("/products/:id", middleware.JWTProtected(), middleware.AdminOnly(), controllers.UpdateProduct)
-    app.Delete("/products/:id", middleware.JWTProtected(), middleware.AdminOnly(), controllers.DeleteProduct)
+    app.Post("/products", middleware.JWTProtected(), controllers.CreateProduct)
+    app.Put("/products/:id", middleware.JWTProtected(), controllers.UpdateProduct)
+    app.Delete("/products/:id", middleware.JWTProtected(), controllers.DeleteProduct)
 
     // Cart
     cart := app.Group("/cart", middleware.JWTProtected())

@@ -24,7 +24,6 @@ Go-Mart is a modern, scalable e-commerce backend built using Go (Golang), Fiber 
 | Web Framework  | [Fiber](https://gofiber.io/)       |
 | ORM            | [GORM](https://gorm.io/)          |
 | Database       | PostgreSQL               |
-| Auth           | JWT (JSON Web Tokens)    |
 
 ---
 

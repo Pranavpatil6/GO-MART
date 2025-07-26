@@ -101,5 +101,5 @@ func DeleteProduct(c *fiber.Ctx) error {
         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to delete product"})
     }
 
-    return c.SendStatus(fiber.StatusNoContent)
+    return c.Status(fiber.StatusNoContent).JSON(fiber.Map{"message": "Product Deleted"})
 }
