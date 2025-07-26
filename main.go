@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -23,5 +24,5 @@ func main() {
 
 	routes.SetupRoutes(app)
 
-	app.Listen(":3000")
+	log.Fatal(app.Listen(":3000"))
 }

@@ -76,19 +76,4 @@ func GetOrders(c *fiber.Ctx) error {
     return c.JSON(orders)
 }
 
-// GetOrderById returns full details of a single order
-func GetOrderById(c *fiber.Ctx) error {
-    idStr := c.Params("id")
-    id, err := strconv.Atoi(idStr)
-    if err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Invalid order ID"})
-    }
-
-    var order models.Order
-    if err := database.DB.Preload("Items").First(&order, id).Error; err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "Order not found"})
-    }
-
-    return c.JSON(order)
-}
 

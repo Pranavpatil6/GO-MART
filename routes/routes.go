@@ -20,8 +20,7 @@ func SetupRoutes(app *fiber.App) {
     // Cart
     cart := app.Group("/cart", middleware.JWTProtected())
     cart.Post("/add", controllers.AddToCart)
-    cart.Patch("/update", controllers.UpdateCart)
-    cart.Delete("/remove/:id", controllers.RemoveFromCart)
+    cart.Delete("/remove/:id", controllers.RemoveCartItem)
     cart.Get("/", controllers.ViewCart)
     cart.Post("/apply-coupon", controllers.ApplyCoupon)
 
@@ -35,6 +34,6 @@ func SetupRoutes(app *fiber.App) {
     orders := app.Group("/orders", middleware.JWTProtected())
     orders.Post("/", controllers.CreateOrder)        
     orders.Get("/", controllers.GetOrders)
-    orders.Get("/:id", controllers.GetOrderById)
+
 
 }
