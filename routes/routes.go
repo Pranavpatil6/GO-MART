@@ -21,7 +21,7 @@ func SetupRoutes(app *fiber.App) {
     // Cart
     cart := app.Group("/cart",middleware.JWTProtected())
     cart.Post("/add", controllers.AddToCart)
-    cart.Delete("	/remove/:id", controllers.RemoveCartItem)
+    cart.Delete("/remove/:id", controllers.RemoveCartItem)
     cart.Get("/", controllers.ViewCart)
     cart.Post("/apply-coupon", controllers.ApplyCoupon)
 

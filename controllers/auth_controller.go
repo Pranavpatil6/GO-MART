@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"os"
 	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pranavpatil6/go_mart/database"
@@ -11,44 +13,44 @@ import (
 )
 
 func GetAllUsers(c *fiber.Ctx) error {
-    var users []models.User
-    result := database.DB.Find(&users)
-    if result.Error != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to retrieve users",
-        })
-    }
+	var users []models.User
+	result := database.DB.Find(&users)
+	if result.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve users",
+		})
+	}
 
-    return c.JSON(users)
+	return c.JSON(users)
 }
 
 func Register(c *fiber.Ctx) error {
-    
+
 	var input models.User
-    if err := c.BodyParser(&input); err != nil {
-        return c.Status(422).JSON(fiber.Map{"error": "Invalid JSON input"})
-    }
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(422).JSON(fiber.Map{"error": "Invalid JSON input"})
+	}
 
-    if input.Name == "" || input.Email == "" || input.Password == "" {
-        return c.Status(422).JSON(fiber.Map{"error": "Missing required field"})
-    }
+	if input.Name == "" || input.Email == "" || input.Password == "" {
+		return c.Status(422).JSON(fiber.Map{"error": "Missing required field"})
+	}
 
-    var exists models.User
-    if err := database.DB.Where("email = ?", input.Email).First(&exists).Error; err == nil {
-        return c.Status(400).JSON(fiber.Map{"error": "Email already registered"})
-    }
+	var exists models.User
+	if err := database.DB.Where("email = ?", input.Email).First(&exists).Error; err == nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Email already registered"})
+	}
 
-    hash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
-    user := models.User{
-        Name:     input.Name,
-        Email:    input.Email,
-        Password: string(hash),
-        Role:     "user", // default role
-    }
-    if err := database.DB.Create(&user).Error; err != nil {
-        return c.Status(500).JSON(fiber.Map{"error": "Failed to create user"})
-    }
-    return c.Status(201).JSON(fiber.Map{"message": "User registered successfully"})
+	hash, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
+	user := models.User{
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: string(hash),
+		Role:     "user", // default role
+	}
+	if err := database.DB.Create(&user).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to create user"})
+	}
+	return c.Status(201).JSON(fiber.Map{"message": "User registered successfully"})
 }
 
 func Login(c *fiber.Ctx) error {
@@ -59,6 +61,7 @@ func Login(c *fiber.Ctx) error {
 
 	var input LoginInput
 	if err := c.BodyParser(&input); err != nil {
+		fmt.Println(input)
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid input"})
 	}
 
@@ -75,6 +78,7 @@ func Login(c *fiber.Ctx) error {
 		"id":    user.ID,
 		"email": user.Email,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+		"role":     user.Role,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
